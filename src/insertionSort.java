@@ -1,39 +1,38 @@
-import java.util.Arrays;
+import java.util.Vector;
 
 public class insertionSort {
+    public insertionSort() {
+    }
 
-    static void insertion_sort(int a[],int n){
-
-        for(int i=1; i<=n-1; i++){
-
+    static void insertion_sort(int[] a, int n) {
+        for(int i = 1; i <= n - 1; ++i) {
             int current = a[i];
 
-            int prev = i - 1;
+            int prev;
             //loop to find the right index where the element current should be inserted
-            while(prev>=0 && a[prev] > current){
+            for(prev = i - 1; prev >= 0 && a[prev] > current; --prev) {
                 a[prev + 1] = a[prev];
-                prev = prev - 1;
             }
 
-            a[prev+1] = current;
-        }
-
-
-    }
-
-
-    public static void main(String[] args){
-
-        int[] arr = {10,9,8,6,5,4,3,2,11,16,8};
-        int n = arr.length;
-
-        insertion_sort(arr, n);
-
-
-        for(int k: arr){
-            System.out.println(k);
+            a[prev + 1] = current;
         }
 
     }
 
+    public static void main(String[] args) {
+        String file_name = "src/wordList.txt";
+        Vector<String> string_vector = new Vector<>();
+
+        try {
+            importWords.import_words(file_name, string_vector);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        for(int i = 0; i < 10; ++i) {
+            System.out.println(string_vector.get(i));
+        }
+
+        System.out.println("Total length of string vector is :" + string_vector.size());
+    }
 }
