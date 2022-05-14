@@ -1,20 +1,23 @@
+import java.io.IOException;
+import java.util.Collections;
 import java.util.Vector;
+import java.util.Collection;
 
 public class insertionSort {
     public insertionSort() {
     }
 
-    static void insertion_sort(int[] a, int n) {
-        for(int i = 1; i <= n - 1; ++i) {
-            int current = a[i];
+    // Doesn't work
+    static void insertion_sort(Vector<String> string_vector) {
+        for(int i = 1; i < string_vector.size(); i++) {
+            String temp = string_vector.get(i);
 
-            int prev;
-            //loop to find the right index where the element current should be inserted
-            for(prev = i - 1; prev >= 0 && a[prev] > current; --prev) {
-                a[prev + 1] = a[prev];
+            int j=i;
+            while(j>0 && string_vector.get(j-1).compareTo(temp) > 1){
+                string_vector.set(j, string_vector.get(j-1));
+                j--;
             }
-
-            a[prev + 1] = current;
+            string_vector.set(j,temp);
         }
 
     }
@@ -23,16 +26,36 @@ public class insertionSort {
         String file_name = "src/wordList.txt";
         Vector<String> string_vector = new Vector<>();
 
-        try {
+        try{
             importWords.import_words(file_name, string_vector);
-        } catch (Exception e) {
-            e.printStackTrace();
+        }catch(IOException e){
+            System.out.println("Something went wrong when reading a file");
         }
 
-        for(int i = 0; i < 10; ++i) {
+
+        System.out.println("Total length after reading .txt file is :" + string_vector.size());
+
+        // To shuffle the word list
+        //Collections.shuffle(string_vector);
+
+        insertion_sort(string_vector);
+
+        System.out.println("After Sorting: ");
+        for(int i = 0; i < 20; ++i) {
             System.out.println(string_vector.get(i));
         }
 
-        System.out.println("Total length of string vector is :" + string_vector.size());
+        System.out.println("Total length after insertion sort is :" + string_vector.size());
+
+        // check if contain single quote in line
+        //int counter = 0;
+        //for(String word: string_vector){
+        //    if(word.contains("'")){
+        //        System.out.print(word + " * ");
+        //        counter++;
+        //    }
+        //}
+        //System.out.println("");
+        //System.out.println(counter); //Should have 359
     }
 }
