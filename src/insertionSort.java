@@ -8,7 +8,7 @@ public class insertionSort {
     }
 
     // Need to ask Dr whether vector method consider as +1 or act like array
-    static long insertion_sort(Vector<String> string_vector) {
+    static long insertion_sort(Vector<String> string_vector, int iteration) {
 
         long counter = 2L; // int j = 1, j;
 
@@ -18,7 +18,7 @@ public class insertionSort {
             counter += 3; // i < ... and i++
 
             // print out the progress of the insertion sort algorithm
-            System.out.println("Currently at index "+i);
+            System.out.println("Iteration " + iteration +  ": Currently at index "+i);
 
             // store the current word into a String variable
             String temp = string_vector.get(i);
@@ -85,7 +85,7 @@ public class insertionSort {
             Collections.shuffle(string_vector);
 
             // track the time complexity for each sorting
-            time_complexity_tracker.add(insertion_sort(string_vector));
+            time_complexity_tracker.add(insertion_sort(string_vector, i+1));
         }
         long worst_case = Collections.max(time_complexity_tracker);
         long best_case = Collections.min(time_complexity_tracker);
