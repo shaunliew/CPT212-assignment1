@@ -1,9 +1,8 @@
-!apple
-!bee
-!bird
-!cat
-!fish
-!fake
+naÃ¯vetÃ©
+danaÃ«
+geneviÃ¨ve
+cÃ³rdoba
+bjÃ¶rn
 !finish
 !dog
 !dig

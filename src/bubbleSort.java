@@ -73,7 +73,7 @@ public class bubbleSort {
 //            System.out.println(i);
 //        }
         System.out.println("The number of primitive operations used for "+caseName+ " is " + PrimitiveOperations);
-        System.out.println("");
+        System.out.println();
     }
 
     static void showAverageCaseResult(Vector<String> string_vector, int numberOfShuffle)
@@ -91,7 +91,7 @@ public class bubbleSort {
         int averagePrimitiveOperations = TotalPrimitiveOperations/numberOfShuffle;
         System.out.println("The number of shuffle we used for average case is "+ numberOfShuffle);
         System.out.println("The number of primitive operations used for average case is " + averagePrimitiveOperations);
-        System.out.println("");
+        System.out.println();
     }
 
     // worst case is O(n^2)
@@ -104,33 +104,32 @@ public class bubbleSort {
         String averageCase_file_name = "src/averageCaseWordList.txt";
         String bestCase_file_name = "src/bestCaseWordList.txt";
         String worstCase_file_name = "src/worstCaseWordList.txt";
-        //String test_file_name = "src/test.txt";
+        String test_file_name = "src/test.txt";
         // declare string vector to store input
         Vector<String> averageCase_string_vector = new Vector<>();
         Vector<String> bestCase_string_vector = new Vector<>();
         Vector<String> worstCase_string_vector = new Vector<>();
-        //Vector<String> test_string_vector = new Vector<>();
+        Vector<String> test_string_vector = new Vector<>();
         // import the words from .txt file
         try{
             importWords.import_words(averageCase_file_name, averageCase_string_vector);
             importWords.import_words(bestCase_file_name, bestCase_string_vector);
             importWords.import_words(worstCase_file_name, worstCase_string_vector);
-            //importWords.import_words(test_file_name, test_string_vector);
+            importWords.import_words(test_file_name, test_string_vector);
         }catch(IOException e){
             System.out.println("Something went wrong when reading the files");
         }
 
         // display total words read from .txt file
-        //string_vector.size()
         System.out.println("Total length after reading each .txt file are:" );
         System.out.println("Average case file is "+ averageCase_string_vector.size());
         System.out.println("Best case file is "+ bestCase_string_vector.size());
         System.out.println("Worst case file is "+ worstCase_string_vector.size());
-        //System.out.println("Test file is "+ test_string_vector.size());
-        System.out.println("");
+        System.out.println("Test file is "+ test_string_vector.size());
+        System.out.println();
 
         //For Testing
-//        showAverageCaseResult(test_string_vector,1);
+        showResult("Test Case",test_string_vector);
 //        for(String i: test_string_vector)
 //        {
 //            System.out.println(i);
