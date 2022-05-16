@@ -1,0 +1,10 @@
+!apple
+!bee
+!bird
+!cat
+!fish
+!fake
+!finish
+!dog
+!dig
+!egg
