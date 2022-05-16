@@ -1,79 +1,66 @@
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Vector;
+
 // Java program for implementation of QuickSort
-class quickSort
+public class quickSort
 {
-    /* This function takes last element as pivot,
-       places the pivot element at its correct
-       position in sorted array, and places all
-       smaller (smaller than pivot) to left of
-       pivot and all greater elements to right
-       of pivot */
-    int partition(int[] arr, int low, int high)
+    static int partition(Vector<String> string_vector, int start, int end)
     {
-        int pivot = arr[high];
-        int i = (low-1); // index of smaller element
-        for (int j=low; j<high; j++)
+        int pivot = Integer.parseInt(string_vector.get(start + (end - start) / 2));
+        int i = start;
+        for (int j = start+1; j < end; j++)
         {
-            // If current element is smaller than or
-            // equal to pivot
-            if (arr[j] <= pivot)
+            if (string_vector.get(j).compareTo(string_vector.get(pivot)) < 0)
             {
                 i++;
-
-                // swap arr[i] and arr[j]
-                int temp = arr[i];
-                arr[i] = arr[j];
-                arr[j] = temp;
+                Collections.swap(string_vector, i, j);
             }
         }
-
-        // swap arr[i+1] and arr[high] (or pivot)
-        int temp = arr[i+1];
-        arr[i+1] = arr[high];
-        arr[high] = temp;
-
-        return i+1;
+        Collections.swap(string_vector, i, pivot);
+        return pivot;
     }
 
-
-    /* The main function that implements QuickSort()
-      arr[] --> Array to be sorted,
-      low  --> Starting index,
-      high  --> Ending index */
-    void sort(int[] arr, int low, int high)
+    static void sort(Vector<String> string_vector, int start, int end)
     {
-        if (low < high)
+        if (start > end)
+            return;
+        else
         {
-            /* pi is partitioning index, arr[pi] is
-              now at right place */
-            int pi = partition(arr, low, high);
-
-            // Recursively sort elements before
-            // partition and after partition
-            sort(arr, low, pi-1);
-            sort(arr, pi+1, high);
+            int pivot = partition(string_vector, start, end);
+            sort(string_vector, start, pivot-1);
+            sort(string_vector, pivot+1, end);
         }
     }
 
-    /* A utility function to print array of size n */
-    static void printArray(int[] arr)
+
+    /*static void printResult(Vector<String> string_vector)
     {
-        int n = arr.length;
-        for (int i=0; i<n; ++i)
-            System.out.print(arr[i]+" ");
-        System.out.println();
-    }
+        int n = string_vector.size();
+        sort(string_vector, 0, n);
+        for (int i=0; i<n; i++)
+            System.out.println(string_vector.get(i));
+    }*/
+
 
     // Driver program
     public static void main(String[] args)
     {
-        int arr[] = {10, 7, 8, 9, 1, 5};
-        int n = arr.length;
+        // set file path
+        String file_name = "src/wordList.txt";
 
-        quickSort ob = new quickSort();
-        ob.sort(arr, 0, n-1);
+        // declare string vector to store input
+        Vector<String> string_vector = new Vector<>();
 
-        System.out.println("sorted array");
-        printArray(arr);
+        // import the words from .txt file
+        try{
+            importWords.import_words(file_name, string_vector);
+        }catch(IOException e){
+            System.out.println("Something went wrong when reading a file");
+        }
+
+        // display total words read from .txt file
+        System.out.println("Total length after reading .txt file is :" + string_vector.size());
     }
 }
-/*This code is contributed by Rajat Mishra */
+
