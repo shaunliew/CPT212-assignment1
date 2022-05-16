@@ -1,3 +1,5 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
@@ -18,11 +20,11 @@ public class insertionSort {
             counter += 3; // i < ... and i++
 
             // print out the progress of the insertion sort algorithm
-            System.out.println("Iteration " + iteration +  ": Currently at index "+i);
+            //System.out.println("Iteration " + iteration +  ": Currently at index "+i);
 
             // store the current word into a String variable
             String temp = string_vector.get(i);
-            counter += 3; // .get method and assigning value and println
+            counter += 2; // .get method and assigning value and (excluded println now)
 
             counter++; // j=i
 
@@ -33,7 +35,7 @@ public class insertionSort {
                 counter += 4; // j-1 and .get and .compareTo and >1
 
                 // if the word on the left (index j-1) is larger than the current word, continue to shift the word (to right), else break loop
-                if (string_vector.get(j-1).compareTo(temp)>0){ //0 for actual, 1 for testing as will took too long time for 1
+                if (string_vector.get(j-1).compareTo(temp)>0){ //0 for actual, 1 for testing as it will take too long time for actual one
                     string_vector.set(j, string_vector.get(j-1));
 
                     counter += 3; // j-1 and .get and .set
@@ -61,6 +63,9 @@ public class insertionSort {
 
     public static void main(String[] args) {
 
+        // declare variables
+        long worst_case, best_case, average_case, sum = 0L;
+
         // set file path
         String file_name = "src/wordList.txt";
 
@@ -77,8 +82,19 @@ public class insertionSort {
         // display total words read from .txt file
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
 
+        // Worst Case scenario
+        Collections.sort(string_vector, Collections.reverseOrder());
+        worst_case = insertion_sort(string_vector, 1);
+        System.out.println();
+        System.out.println("Worst Case: " + worst_case);
 
-        // run 10 times and find the best, average, worst case
+        // Best Case scenario
+        Collections.sort(string_vector);
+        best_case = insertion_sort(string_vector, 1);
+        System.out.println();
+        System.out.println("Best Case: " + best_case);
+
+        // Average Case scenario - run 10 times and find the average
         Vector<Long> time_complexity_tracker = new Vector<>();
         for(int i=0; i<10; i++){
             // shuffle the word list before sorting
@@ -87,22 +103,37 @@ public class insertionSort {
             // track the time complexity for each sorting
             time_complexity_tracker.add(insertion_sort(string_vector, i+1));
         }
-        long worst_case = Collections.max(time_complexity_tracker);
-        long best_case = Collections.min(time_complexity_tracker);
-        long average_case, sum = 0L;
 
         for(long time: time_complexity_tracker){
             sum += time;
         }
-        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size()); // maybe need to do %10e9
+        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size());
 
         System.out.println();
-        System.out.println("Worst Case: " + worst_case);
         System.out.println("Average Case: " + average_case);
-        System.out.println("Best Case: " + best_case);
 
 
-        // *** need to store all the vector tracker and the 3 cases inside txt files
+        // Store 3 cases primitive operations in .txt file to avoid rerun of the code
+        try{
+            // data to stored
+            String data = "Best Case: " + best_case + "\nAverage Case: " + average_case + "\nWorst Case: " + worst_case;
+
+            // creates a FileWriter
+            FileWriter file = new FileWriter("src/insertionSortCases.txt");
+
+            // creates a BufferedWriter
+            BufferedWriter buffer = new BufferedWriter(file);
+
+            // writes the string to the file
+            buffer.write(data);
+
+            // close the writer
+            buffer.close();
+        }catch (Exception e){
+            System.out.println("Something went wrong when writing a file");
+        }
+
+
         // do we need to output sorted words into a txt file?
         // later draft time complexity against number of inputs code block
 
