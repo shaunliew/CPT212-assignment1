@@ -22,7 +22,7 @@ public class insertionSort {
 
             // store the current word into a String variable
             String temp = string_vector.get(i);
-            counter += 2; // .get method and assigning value
+            counter += 3; // .get method and assigning value and println
 
             counter++; // j=i
 
@@ -77,6 +77,7 @@ public class insertionSort {
         // display total words read from .txt file
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
 
+
         // run 10 times and find the best, average, worst case
         Vector<Long> time_complexity_tracker = new Vector<>();
         for(int i=0; i<10; i++){
@@ -100,19 +101,31 @@ public class insertionSort {
         System.out.println("Average Case: " + average_case);
         System.out.println("Best Case: " + best_case);
 
+
+        // *** need to store all the vector tracker and the 3 cases inside txt files
+        // do we need to output sorted words into a txt file?
+        // later draft time complexity against number of inputs code block
+
         // Self check algorithm
 
-        // check if contain single quote in line (check if correct input line)
-        //int counter = 0;
-        //for(String word: string_vector){
-        //    if(word.contains("'")){
-        //        System.out.print(word + " * ");
-        //        counter++;
-        //    }
-        //}
-        //System.out.println("");
-        //System.out.println(counter); //Should have 359
+        /*
+        // check if contain non ascii in string
+        int counter = 0;
+        for(String word: string_vector){
 
+            // !word.matches("[a-zA-Z]+" //true if contain non alphabet
+            // !word.matches("\\A\\p{ASCII}*\\z") // true if contain non ascii value - ASCII means 0 - 127 only
+            // word.contains("'") // true if contain ' char
+
+            if(!word.matches("\\A\\p{ASCII}*\\z")){
+                System.out.print(word + "  |  ");
+                counter++;
+            }
+        }
+        System.out.println("");
+        System.out.println(counter);
+        // for example: naÃ¯vetÃ© , danaÃ« , geneviÃ¨ve , cÃ³rdoba , bjÃ¶rn
+         */
 
         /*
         // test insertion sort
