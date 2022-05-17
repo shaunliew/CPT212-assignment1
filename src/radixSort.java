@@ -3,146 +3,106 @@
 // based on lecturer start from back to front
 
 
-/******************************************************************************
- *  Compilation:  javac LSD.java
- *  Execution:    java LSD < input.txt
- *  Dependencies: StdIn.java StdOut.java
- *  Data files:   https://algs4.cs.princeton.edu/51radix/words3.txt
- *
- *  LSD radix sort
- *
- *    - Sort a String[] array of n extended ASCII strings (R = 256), each of length w.
- *
- *    - Sort an int[] array of n 32-bit integers, treating each integer as
- *      a sequence of w = 4 bytes (R = 256).
- *
- *  Uses extra space proportional to n + R.
- *
- *
- *  % java LSD < words3.txt
- *  all
- *  bad
- *  bed
- *  bug
- *  dad
- *  ...
- *  yes
- *  yet
- *  zoo
- *
- ******************************************************************************/
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
 
-/**
- *  The {@code LSD} class provides static methods for sorting an
- *  array of <em>w</em>-character strings or 32-bit integers using LSD radix sort.
- *  <p>
- *  For additional documentation,
- *  see <a href="https://algs4.cs.princeton.edu/51radix">Section 5.1</a> of
- *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
- *
- *  @author Robert Sedgewick
- *  @author Kevin Wayne
- */
-public class radixSort {
-    private static final int BITS_PER_BYTE = 8;
+public class RadixSort {
 
-    // do not instantiate
-    private radixSort() { }
+    private RadixSort() {
+    }
 
-    /**
-     * Rearranges the array of w-character strings in ascending order.
-     *
-     * @param a the array to be sorted
-     * @param w the number of characters per string
-     */
-    public static void sort(String[] a, int w) {
-        int n = a.length;
-        int R = 256;   // extend ASCII alphabet size
-        String[] aux = new String[n];
+    // find the longest string in wordList.txt
+    public static String getLongestString(Vector<String> string_vector) {
+        int maxLength = 0;
+        String longestString = null;
+        for (String s : string_vector) {
+            if (s.length() > maxLength) {
+                maxLength = s.length();
+                longestString = s;
+            }
+        }
+        return longestString;
+    }
 
-        for (int d = w-1; d >= 0; d--) {
+    // perform left padding by inserting "!" to the left of strings which length < maxLength
+    public static String leftPadding(Vector<String> string_vector, char ch, int L)
+    {
+        String result = String
+
+        // First left pad the string with space up to length L
+        .format("%" + L + "s", string_vector)
+
+        // Then replace all the spaces with the given character ch
+        .replace(' ', ch);
+
+        // Return the resultant string
+         return result;
+    }
+
+    // find "!" that has been inserted before
+    public static char isFound(char ch){
+        char[] replaceChar = {'!'};
+        for (int i = 0; i < replaceChar.length; i++) {
+            if(ch==replaceChar[i]){
+                return '\0';
+            }
+        }
+        return ch;
+    }
+
+    // remove "!" that has been inserted before
+    public static String removeChar(String ch){
+        char[] srcArr = ch.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < srcArr.length; i++) {
+            char foundChar = isFound(srcArr[i]);
+            if(foundChar!='\0')
+                sb.append(foundChar);
+        }
+        return sb.toString();
+    }
+
+    // starting radix sort
+    public static long radix_sort(Vector<String> string_vector, int z) {
+
+        int n = string_vector.size();
+        int R = 256;   // alphabet size of entended ASCII
+        Vector<String> aux = new Vector<String>(n);
+
+        // find the longest string in wordList.txt
+        getLongestString(string_vector);
+
+        // perform left padding
+        leftPadding(string_vector, '!', 30);
+
+        for (int d = z - 1; d >= 0; d--) {
             // sort by key-indexed counting on dth character
 
             // compute frequency counts
-            int[] count = new int[R+1];
+            int[] count = new int[R + 1];
             for (int i = 0; i < n; i++)
-                count[a[i].charAt(d) + 1]++;
+                count[string_vector.get(i).charAt(d) + 1]++;
 
             // compute cumulates
             for (int r = 0; r < R; r++)
-                count[r+1] += count[r];
+                count[r + 1] += count[r];
 
             // move data
             for (int i = 0; i < n; i++)
-                aux[count[a[i].charAt(d)]++] = a[i];
+                aux.set(count[string_vector.get(i).charAt(d)]++, string_vector.get(i));
 
             // copy back
             for (int i = 0; i < n; i++)
-                a[i] = aux[i];
+                string_vector.set(i, aux.get(i));
         }
+
+        isFound('!');
+        removeChar("!");
+
+        return 0;
     }
 
-    /**
-     * Rearranges the array of 32-bit integers in ascending order.
-     * This is about 2-3x faster than Arrays.sort().
-     *
-     * @param a the array to be sorted
-     */
-    public static void sort(int[] a) {
-        final int BITS = 32;                 // each int is 32 bits
-        final int R = 1 << BITS_PER_BYTE;    // each bytes is between 0 and 255
-        final int MASK = R - 1;              // 0xFF
-        final int w = BITS / BITS_PER_BYTE;  // each int is 4 bytes
-
-        int n = a.length;
-        int[] aux = new int[n];
-
-        for (int d = 0; d < w; d++) {
-
-            // compute frequency counts
-            int[] count = new int[R+1];
-            for (int i = 0; i < n; i++) {
-                int c = (a[i] >> BITS_PER_BYTE*d) & MASK;
-                count[c + 1]++;
-            }
-
-            // compute cumulates
-            for (int r = 0; r < R; r++)
-                count[r+1] += count[r];
-
-            // for most significant byte, 0x80-0xFF comes before 0x00-0x7F
-            if (d == w-1) {
-                int shift1 = count[R] - count[R/2];
-                int shift2 = count[R/2];
-                for (int r = 0; r < R/2; r++)
-                    count[r] += shift1;
-                for (int r = R/2; r < R; r++)
-                    count[r] -= shift2;
-            }
-
-            // move data
-            for (int i = 0; i < n; i++) {
-                int c = (a[i] >> BITS_PER_BYTE*d) & MASK;
-                aux[count[c]++] = a[i];
-            }
-
-            // copy back
-            for (int i = 0; i < n; i++)
-                a[i] = aux[i];
-        }
-    }
-
-    /**
-     * Reads in a sequence of fixed-length strings from standard input;
-     * LSD radix sorts them;
-     * and prints them to standard output in ascending order.
-     *
-     * @param args the command-line arguments
-     */
     public static void main(String[] args) {
         // set file path
         String file_name = "src/wordList.txt";
@@ -151,30 +111,54 @@ public class radixSort {
         Vector<String> string_vector = new Vector<>();
 
         // import the words from .txt file
-        try{
+        try {
             importWords.import_words(file_name, string_vector);
-            String[] a = string_vector.toArray(new String[0]);
-            int n = a.length;
+            Vector<String> a = string_vector;
+
+            int n = a.size();
 
             // check that strings have fixed length
-            int w = a[0].length();
+            int w = a.get(0).length();
             for (int i = 0; i < n; i++)
-                assert a[i].length() == w : "Strings must have fixed length";
+                assert a.get(i).length() == w : "Strings must have fixed length";
 
             // sort the strings
-            sort(a, w);
+            radix_sort(a, w);
 
             // print results
             for (int i = 0; i < n; i++)
-                System.out.println(a[i]);
-        }catch(IOException e){
+                System.out.println(a.get(i));
+
+        }
+        catch(IOException e){
             System.out.println("Something went wrong when reading a file");
         }
 
         // display total words read from .txt file
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
 
+        // run 10 times and find the best, average, worst case
+        Vector<Long> time_complexity_tracker = new Vector<>();
+        for(int i=0; i<10; i++){
+            // shuffle the word list before sorting
+            Collections.shuffle(string_vector);
+
+            // track the time complexity for each sorting
+            time_complexity_tracker.add(radix_sort(string_vector,0));
+        }
+        long worst_case = Collections.max(time_complexity_tracker);
+        long best_case = Collections.min(time_complexity_tracker);
+        long average_case, sum = 0L;
+
+        for(long time: time_complexity_tracker){
+            sum += time;
+        }
+        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size()); // maybe need to do %10e9
+
+        System.out.println();
+        System.out.println("Worst Case: " + worst_case);
+        System.out.println("Average Case: " + average_case);
+        System.out.println("Best Case: " + best_case);
     }
 }
-
 
