@@ -130,10 +130,10 @@ public class bubbleSort {
 
         //For Testing
         showResult("Test Case",test_string_vector);
-//        for(String i: test_string_vector)
-//        {
-//            System.out.println(i);
-//        }
+       for(String i: test_string_vector)
+       {
+           System.out.println(i);
+       }
 
         //For Average case
         showAverageCaseResult(averageCase_string_vector,100);

@@ -7,9 +7,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
 
-public class RadixSort {
+public class radixSort {
 
-    private RadixSort() {
+    private radixSort() {
     }
 
     // find the longest string in wordList.txt

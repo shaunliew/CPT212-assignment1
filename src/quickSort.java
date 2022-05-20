@@ -1,46 +1,47 @@
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
+import java.util.Random;
 
 // Java program for implementation of QuickSort
 public class quickSort
 {
-    static int partition(Vector<String> string_vector, int start, int end)
+    public static int partition(Vector<String> string_vector, int low, int high)
     {
-        int pivot = Integer.parseInt(string_vector.get(start + (end - start) / 2));
-        int i = start;
-        for (int j = start+1; j < end; j++)
+        int pivotIndex = new Random().nextInt(high - low) + low;
+        String pivot = string_vector.get(pivotIndex);
+        Collections.swap(string_vector, pivotIndex, high);
+        int i = (low - 1);
+        for (int j = low; j <= high - 1; j++)
         {
-            if (string_vector.get(j).compareTo(string_vector.get(pivot)) < 0)
+            if (string_vector.get(j).compareTo(pivot) < 0)
             {
                 i++;
                 Collections.swap(string_vector, i, j);
             }
         }
-        Collections.swap(string_vector, i, pivot);
-        return pivot;
+        Collections.swap(string_vector, i + 1, high);
+        return i+1;
     }
 
-    static void sort(Vector<String> string_vector, int start, int end)
+    public static void qckSort(Vector<String> string_vector, int low, int high)
     {
-        if (start > end)
-            return;
-        else
+        if (low < high)
         {
-            int pivot = partition(string_vector, start, end);
-            sort(string_vector, start, pivot-1);
-            sort(string_vector, pivot+1, end);
+            int pi = partition(string_vector, low, high);
+            qckSort(string_vector, low, pi - 1);
+            qckSort(string_vector, pi + 1, high);
         }
     }
 
-
-    /*static void printResult(Vector<String> string_vector)
+    static void printResult(Vector<String> string_vector)
     {
         int n = string_vector.size();
-        sort(string_vector, 0, n);
-        for (int i=0; i<n; i++)
+        for (int i = 0; i < n; ++i)
+        {
             System.out.println(string_vector.get(i));
-    }*/
+        }
+    }
 
 
     // Driver program
@@ -61,6 +62,10 @@ public class quickSort
 
         // display total words read from .txt file
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
+        int n = string_vector.size();
+        qckSort(string_vector, 0, n-1);
+        System.out.println("Sorted String:");
+        printResult(string_vector);
     }
 }
 
