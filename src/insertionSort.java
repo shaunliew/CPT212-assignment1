@@ -2,6 +2,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Vector;
 
 
@@ -31,10 +32,10 @@ public class insertionSort {
             for(j=i; j>0; j--){
                 counter += 3; // j>0 and j--
 
-                counter += 4; // j-1 and .get and .compareTo and >1
+                counter += 4; // j-1 and .get and .compareTo and >0
 
                 // if the word on the left (index j-1) is larger than the current word, continue to shift the word (to right), else break loop
-                if (string_vector.get(j-1).compareTo(temp)>0){ //0 for actual, 1 for testing as it will take too long time for actual one
+                if (string_vector.get(j-1).compareTo(temp)>0){
                     string_vector.set(j, string_vector.get(j-1));
 
                     counter += 3; // j-1 and .get and .set
@@ -60,10 +61,59 @@ public class insertionSort {
         return counter;
     }
 
-    static long best_insertion_sort(Vector<String> string_vector, int iteration){
-        long counter = 0;
+    static long best_insertion_sort(Vector<String> string_vector){
+        long best_case;
 
-        return counter;
+        // best case for insertion sort is sorted list
+        Collections.sort(string_vector);
+
+        // store best_case primitive operations
+        best_case = insertion_sort(string_vector, 1);
+
+        System.out.println("Best Case: " + best_case);
+
+        return best_case;
+    }
+
+    static long average_insertion_sort(Vector<String> string_vector){
+        long average_case, sum = 0L;
+
+        // store primitive operation for each time
+        Vector<Long> primitive_operation_tracker = new Vector<>();
+
+        // run 10 times and find the average
+        for(int i=0; i<10; i++){
+            // shuffle the word list before sorting
+            Collections.shuffle(string_vector);
+
+            // track the time complexity for each sorting
+            primitive_operation_tracker.add(insertion_sort(string_vector, i+1));
+        }
+
+        for(long time: primitive_operation_tracker){
+            sum += time;
+        }
+
+        // store average_case primitive operations
+        average_case = (long)Math.ceil((double)sum / primitive_operation_tracker.size());
+
+        System.out.println("Average Case: " + average_case);
+
+        return average_case;
+    }
+
+    static long worst_insertion_sort(Vector<String> string_vector){
+        long worst_case;
+
+        // worst case for insertion sort is reverse list
+        Collections.sort(string_vector, Collections.reverseOrder());
+
+        // store worst_case primitive operations
+        worst_case = insertion_sort(string_vector, 1);
+
+        System.out.println("Worst Case: " + worst_case);
+
+        return worst_case;
     }
 
 
@@ -71,7 +121,11 @@ public class insertionSort {
     public static void main(String[] args) {
 
         // declare variables
-        long worst_case, best_case, average_case, sum = 0L;
+        Vector<Vector<Long>> primitive_operation_tracker = new Vector<>();
+        primitive_operation_tracker.add(new Vector<>()); // to store best case
+        primitive_operation_tracker.add(new Vector<>()); // to store average case
+        primitive_operation_tracker.add(new Vector<>()); // to store worst case
+        Vector<Integer> inputs = new Vector<>(); // to store the inputs(n)
 
         // set file path
         String file_name = "src/wordList.txt";
@@ -87,83 +141,42 @@ public class insertionSort {
         }
 
         // display total words read from .txt file
-        System.out.println("Total length after reading .txt file is :" + string_vector.size());
+        int original_size = string_vector.size();
+        System.out.println("Total length after reading .txt file is :" + original_size);
 
-        // Worst Case scenario
-        Collections.sort(string_vector, Collections.reverseOrder());
-        worst_case = insertion_sort(string_vector, 1);
-        System.out.println();
-        System.out.println("Worst Case: " + worst_case);
+        // Generate inputs(n)
+        inputs.add(1);
+        for(int i=5000; i<142000; i+=5000){
+            inputs.add(i+1);
+        }
+        inputs.add(original_size);
+        //System.out.println(inputs);
+        //System.out.println();
 
-        // Best Case scenario
-        Collections.sort(string_vector);
-        best_case = insertion_sort(string_vector, 1);
-        System.out.println();
-        System.out.println("Best Case: " + best_case);
+        // finding primitive operations for 3 cases for different inputs(n)
+        for(int n: inputs){
 
-        // Average Case scenario - run 10 times and find the average
-        Vector<Long> time_complexity_tracker = new Vector<>();
-        for(int i=0; i<10; i++){
-            // shuffle the word list before sorting
-            Collections.shuffle(string_vector);
+            // slice the vector
+            Vector<String> input_vector = new Vector<>();
+            input_vector.addAll(new Vector<>(string_vector.subList(0,n)));
 
-            // track the time complexity for each sorting
-            time_complexity_tracker.add(insertion_sort(string_vector, i+1));
+            // output current inputs
+            System.out.println("Current input(n): "+n);
+
+            // Best Case scenario
+            primitive_operation_tracker.get(0).add(best_insertion_sort(input_vector));
+
+            // Average Case scenario -
+            primitive_operation_tracker.get(1).add(average_insertion_sort(input_vector));
+
+            // Worst Case scenario
+            primitive_operation_tracker.get(2).add(worst_insertion_sort(input_vector));
+
+            System.out.println("-------------------------------");
         }
 
-        for(long time: time_complexity_tracker){
-            sum += time;
-        }
-        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size());
-
-        System.out.println();
-        System.out.println("Average Case: " + average_case);
-
-
-        // Store 3 cases primitive operations in .txt file to avoid rerun of the code
-        try{
-            // data to stored
-            String data = "Best Case: " + best_case + "\nAverage Case: " + average_case + "\nWorst Case: " + worst_case;
-
-            // creates a FileWriter
-            FileWriter file = new FileWriter("src/insertionSortCases.txt");
-
-            // creates a BufferedWriter
-            BufferedWriter buffer = new BufferedWriter(file);
-
-            // writes the string to the file
-            buffer.write(data);
-
-            // close the writer
-            buffer.close();
-        }catch (Exception e){
-            System.out.println("Something went wrong when writing a file");
-        }
-
-
-        // do we need to output sorted words into a txt file?
-        // later draft time complexity against number of inputs code block
-
-        // Self check algorithm
-
-        /*
-        // check if contain non ascii in string
-        int counter = 0;
-        for(String word: string_vector){
-
-            // !word.matches("[a-zA-Z]+" //true if contain non alphabet
-            // !word.matches("\\A\\p{ASCII}*\\z") // true if contain non ascii value - ASCII means 0 - 127 only
-            // word.contains("'") // true if contain ' char
-
-            if(!word.matches("\\A\\p{ASCII}*\\z")){
-                System.out.print(word + "  |  ");
-                counter++;
-            }
-        }
-        System.out.println("");
-        System.out.println(counter);
-        // for example: naÃ¯vetÃ© , danaÃ« , geneviÃ¨ve , cÃ³rdoba , bjÃ¶rn
-         */
+        // store all results into a csv file
+        recordOperationvsN.writeToCSV("insertionSort", primitive_operation_tracker, inputs);
 
         /*
         // test insertion sort
@@ -173,16 +186,13 @@ public class insertionSort {
         for(int i = 0; i < 20; i++) {
             System.out.println(string_vector.get(i));
         }
-        */
 
-        // To double-check the sort algorithm
-        /*
+        // double-check the sort algorithm
         Collections.sort(string_vector);
         System.out.println("After Java Sorting: ");
         for(int i = 0; i < 20; ++i) {
             System.out.println(string_vector.get(i));
         }
         */
-
     }
 }

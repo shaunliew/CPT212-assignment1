@@ -8,7 +8,7 @@ public class recordOperationvsN {
     }
 
 
-    static void writeToCSV(String sort_type, Vector<Vector<Long>> primitive_operation_tracker, Vector<Integer> index){
+    static void writeToCSV(String sort_type, Vector<Vector<Long>> primitive_operation_tracker, Vector<Integer> inputs){
         try{
             // creates a FileWriter
             FileWriter file = new FileWriter("src/"+sort_type+"GraphData.csv");
@@ -21,12 +21,12 @@ public class recordOperationvsN {
             buffer.newLine();
 
             // writes all data into file
-            for(int i=0; i<index.size(); i++){
-                buffer.write(index.get(i)+","
+            for(int i=0; i<inputs.size(); i++){
+                buffer.write(inputs.get(i)+","
                                 +primitive_operation_tracker.get(0).get(i)+","
                                 +primitive_operation_tracker.get(1).get(i)+","
                                 +primitive_operation_tracker.get(2).get(i));
-                if(i!=index.size()-1){
+                if(i!=inputs.size()-1){
                     buffer.newLine();
                 }
             }
@@ -38,22 +38,5 @@ public class recordOperationvsN {
         }catch (Exception e){
             System.out.println("Something went wrong when writing a file");
         }
-    }
-
-    public static void main(String[] args){
-        Vector<Vector<Long>> primitive_operation_tracker = new Vector<>();
-        primitive_operation_tracker.add(new Vector<>());
-        primitive_operation_tracker.add(new Vector<>());
-        primitive_operation_tracker.add(new Vector<>());
-        // 3 rows of time complexity
-        primitive_operation_tracker.get(0).add(100L);
-        primitive_operation_tracker.get(1).add(200L);
-        primitive_operation_tracker.get(2).add(300L);
-
-        Vector<Integer> index = new Vector<>();
-        index.add(1);
-
-
-        //writeToCSV("testsort", primitive_operation_tracker, index);
     }
 }
