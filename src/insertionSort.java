@@ -6,10 +6,9 @@ import java.util.Vector;
 
 
 public class insertionSort {
-    public insertionSort() {
+    private insertionSort() {
     }
 
-    // Need to ask Dr whether vector method consider as +1 or act like array
     static long insertion_sort(Vector<String> string_vector, int iteration) {
 
         long counter = 2L; // int j = 1, j;
@@ -60,6 +59,14 @@ public class insertionSort {
 
         return counter;
     }
+
+    static long best_insertion_sort(Vector<String> string_vector, int iteration){
+        long counter = 0;
+
+        return counter;
+    }
+
+
 
     public static void main(String[] args) {
 
