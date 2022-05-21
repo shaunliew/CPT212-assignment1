@@ -1,5 +1,3 @@
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Vector;
@@ -104,6 +102,64 @@ public class quickSort
         return counter;
     }
 
+    static long best_qckSort(Vector<String> string_vector, int n)
+    {
+        long best_case;
+
+        //Best case scenario
+        Collections.sort(string_vector);
+
+        //Store best_case primitive operations
+        best_case = qckSort(string_vector, 0, n - 1);
+
+        System.out.println("Best Case: " + best_case);
+
+        return best_case;
+    }
+
+    static long average_qckSort(Vector<String> string_vector, int n){
+        long average_case, sum = 0L;
+
+        //Store primitive operation for each time
+        Vector<Long> primitive_operation_tracker = new Vector<>();
+
+        //Run 10 times and find the average
+        for(int i = 0; i < 10; i++)
+        {
+            //Shuffle the word list before sorting
+            Collections.shuffle(string_vector);
+
+            //Track the time complexity for each sorting
+            primitive_operation_tracker.add(qckSort(string_vector, i, n-1));
+        }
+
+        for(long time: primitive_operation_tracker){
+            sum += time;
+        }
+
+        //Store average_case primitive operations
+        average_case = (long)Math.ceil((double)sum / primitive_operation_tracker.size());
+
+        System.out.println("Average Case: " + average_case);
+
+        return average_case;
+    }
+
+    static long worst_qckSort(Vector<String> string_vector, int n)
+    {
+        long worst_case;
+
+        //Worst case scenario
+        Collections.reverse(string_vector);
+
+        //Store worst_case primitive operations
+        worst_case = qckSort(string_vector, 0, n-1);
+
+        System.out.println("Worst Case: " + worst_case);
+
+        return worst_case;
+    }
+         
     /*
     Method for printing string_vector after sorting
 
@@ -117,19 +173,22 @@ public class quickSort
     }
     */
 
-
     //Main program
     public static void main(String[] args)
     {
-        //
-        long normal_case, worst_case, best_case, average_case = 0, sum = 0;
-
         //Set file path
         String file_name = "src/wordList.txt";
 
+        // declare variables
+        Vector<Vector<Long>> primitive_operation_tracker = new Vector<>();
+        primitive_operation_tracker.add(new Vector<>()); // to store best case
+        primitive_operation_tracker.add(new Vector<>()); // to store average case
+        primitive_operation_tracker.add(new Vector<>()); // to store worst case
+        Vector<Integer> inputs = new Vector<>(); // to store the inputs(n)
+
         //Declare string vector to store input
         Vector<String> string_vector = new Vector<>();
-
+        
         //Import the words from .txt file
         try{
             importWords.import_words(file_name, string_vector);
@@ -141,36 +200,41 @@ public class quickSort
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
 
         //Declare variable to the size of string_vector
-        int n = string_vector.size();
+        int original_size = string_vector.size();
 
-        //Best Case scenario
-        Collections.sort(string_vector);
-        best_case = qckSort(string_vector, 0, n-1);
-        System.out.println("Best Case: " + best_case);
+        //Generate inputs(n)
+        inputs.add(1);
+        for(int i=5000; i<142000; i+=5000){
+            inputs.add(i+1);
+        }
+        inputs.add(original_size);
 
-        // Average Case scenario - run 10 times and find the average
-        Vector<Long> time_complexity_tracker = new Vector<>();
-        for(int i = 0; i < 10; i++)
-        {
-            //Shuffle the word list before sorting
-            Collections.shuffle(string_vector);
+        //Finding primitive operations for 3 cases for different inputs(n)
+        for(int n: inputs){
 
-            //Track the time complexity for each sorting
-            time_complexity_tracker.add(qckSort(string_vector, i, n-1));
+            // slice the vector
+            Vector<String> input_vector = new Vector<>();
+            input_vector.addAll(new Vector<>(string_vector.subList(0,n)));
+
+            // output current inputs
+            System.out.println("Current input(n): " + n);
+
+            // Best Case scenario
+            primitive_operation_tracker.get(0).add(best_qckSort(input_vector, n));
+
+            // Average Case scenario -
+            primitive_operation_tracker.get(1).add(average_qckSort(input_vector, n));
+
+            // Worst Case scenario
+            primitive_operation_tracker.get(2).add(worst_qckSort(input_vector, n));
+
+            System.out.println("-------------------------------");
         }
 
-        for(long time: time_complexity_tracker){
-            sum += time;
-        }
-        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size());
-        System.out.println("Average Case: " + average_case);
-
-        //Worst Case scenario
-        Collections.reverse(string_vector);
-        worst_case = qckSort(string_vector,0, n-1);
-        System.out.println("Worst Case: " + worst_case);
-
-
+        // store all results into a csv file
+        recordOperationvsN.writeToCSV("quickSort", primitive_operation_tracker, inputs);
+        
+        /*
         //Store 3 cases primitive operations in .txt file to avoid rerun of the code
         try{
             //Declare data to be stored
@@ -190,6 +254,7 @@ public class quickSort
         }catch (Exception e){
             System.out.println("Something went wrong when writing a file");
         }
+        */
 
         /*
         Testing for the quickSort function and display the sorted string
