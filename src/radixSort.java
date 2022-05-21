@@ -13,6 +13,7 @@ public class radixSort {
     }
 
     // find the longest string in wordList.txt
+    // !! better to return the maxLength(int) instead hehe
     public static String getLongestString(Vector<String> string_vector) {
         int maxLength = 0;
         String longestString = null;
@@ -26,11 +27,13 @@ public class radixSort {
     }
 
     // perform left padding by inserting "!" to the left of strings which length < maxLength
+    // !! need to change this function to update the whole vector or single line je? can think whether to include counter in this part later
     public static String leftPadding(Vector<String> string_vector, char ch, int L)
     {
         String result = String
 
         // First left pad the string with space up to length L
+        // var.format ah hahahaa
         .format("%" + L + "s", string_vector)
 
         // Then replace all the spaces with the given character ch
@@ -41,6 +44,7 @@ public class radixSort {
     }
 
     // find "!" that has been inserted before
+    // !! you can change the function to directly manipulate the whole string vector, the current one only check one char
     public static char isFound(char ch){
         char[] replaceChar = {'!'};
         for (int i = 0; i < replaceChar.length; i++) {
@@ -52,6 +56,7 @@ public class radixSort {
     }
 
     // remove "!" that has been inserted before
+    // !! similar can think of manipulate the whole string, becareful whether to add counter inside or not, as it's involved in the radix_sort function already
     public static String removeChar(String ch){
         char[] srcArr = ch.toCharArray();
         StringBuilder sb = new StringBuilder();
@@ -64,17 +69,21 @@ public class radixSort {
     }
 
     // starting radix sort
+    // !! need to remove z as parameter as the length will be determined inside
     public static long radix_sort(Vector<String> string_vector, int z) {
 
         int n = string_vector.size();
-        int R = 256;   // alphabet size of entended ASCII
+        int R = 256;   // alphabet size of extended ASCII
         Vector<String> aux = new Vector<String>(n);
 
         // find the longest string in wordList.txt
+        // !! can store the maxLength into a variable named z(put inside the function instead of parameter)
         getLongestString(string_vector);
 
         // perform left padding
         leftPadding(string_vector, '!', 30);
+
+        // !! once done adding padding, can put in the assert length code here to check the length again
 
         for (int d = z - 1; d >= 0; d--) {
             // sort by key-indexed counting on dth character
@@ -110,6 +119,7 @@ public class radixSort {
         // declare string vector to store input
         Vector<String> string_vector = new Vector<>();
 
+
         // import the words from .txt file
         try {
             importWords.import_words(file_name, string_vector);
@@ -118,12 +128,15 @@ public class radixSort {
             int n = a.size();
 
             // check that strings have fixed length
-            int w = a.get(0).length();
-            for (int i = 0; i < n; i++)
-                assert a.get(i).length() == w : "Strings must have fixed length";
+            // !! need to put this after manipulating string
+            //int w = a.get(0).length();
+            //for (int i = 0; i < n; i++)
+            //    assert a.get(i).length() == w : "Strings must have fixed length";
 
             // sort the strings
-            radix_sort(a, w);
+            // !! change the function to get the length of string inside the radix_sort
+            // !! radix_sort can put outside the try catch as the try catch is for reading the file je
+            //radix_sort(a, w);
 
             // print results
             for (int i = 0; i < n; i++)
@@ -138,6 +151,7 @@ public class radixSort {
         System.out.println("Total length after reading .txt file is :" + string_vector.size());
 
         // run 10 times and find the best, average, worst case
+        // !! your 3 cases is slightly diff then us https://iq.opengenus.org/time-and-space-complexity-of-radix-sort/#:~:text=The%20worst%20case%20in%20radix%20sort%20occurs%20when,running%20time%20of%20Counting%20sort%20is%20O%20%28n%2Bb%29.
         Vector<Long> time_complexity_tracker = new Vector<>();
         for(int i=0; i<10; i++){
             // shuffle the word list before sorting
