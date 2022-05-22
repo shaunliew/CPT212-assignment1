@@ -1,21 +1,14 @@
-// a) sorting words instead of numbers
-// b) words of different length
-// based on lecturer start from back to front
-
-
-import org.apache.groovy.parser.antlr4.util.StringUtils;
-import org.codehaus.groovy.util.StringUtil;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
 public class radixSort {
 
-    private void radixSort() {
+    private radixSort() {
     }
 
-    // find the longest string in wordList.txt
+    // find the longest string length in wordList.txt
     static int getLongestString(Vector<String> string_vector) {
         int maxLength = 0;
         for (String s : string_vector) {
@@ -26,94 +19,220 @@ public class radixSort {
         return maxLength;
     }
 
-    // perform left padding by inserting "!" to the left of strings which length < maxLength
-    // !! need to change this function to update the whole vector or single line je? can think whether to include counter in this part later
-    static void leftPadding(Vector<String> string_vector, char ch, int L) {
-        // Loop over vector
-        for (int i = 0; i < string_vector.size(); i++) {
-            String result = String
-                            // First left pad the string with space up to length L
-                            .format("%" + L + "s", string_vector.get(i))
-                            // Then replace all the spaces with the given character ch
-                            .replace(' ', ch);
-            // update the string in the vector
-            string_vector.set(i,result);
-        }
-    }
-
-    // remove "!" that has been inserted before
-    // !! similar can think of manipulate the whole string, becareful whether to add counter inside or not, as it's involved in the radix_sort function already
-    static void replaceAll(Vector<String> string_vector, String ch){
-        for (int i = 0; i < string_vector.size(); i++) {
-            // replace all '!' with ''
-            String result = string_vector.get(i).replaceAll(ch,"");
-            // update the string in the vector
-            string_vector.set(i,result);
-        }
-    }
-
     // starting radix sort
-    // !! need to remove z as parameter as the length will be determined inside
-    static long radix_sort(Vector<String> string_vector) {
+    static long radix_sort(Vector<String> string_vector, char smallest, char largest) {
+
+        /*
+        System.out.println((int)'\''); //smallest ascii -39
+        System.out.println((int)'™'); //largest ascii - 8483
+         */
 
         int n = string_vector.size();
-        int R = 8483;   // largest char available in text file
+        int count_size = (int) largest - smallest + 2;
         Vector<String> aux = new Vector<>();
         aux.setSize(n);
-        Vector<String> a = string_vector;
 
-        // find the longest string in wordList.txt
-        // !! can store the maxLength into a variable named z(put inside the function instead of parameter)
-        int z = getLongestString(a);
+        long counter = 7L; // int n = ..., .size(), - smallest, + 2, int count_size = ..., aux = .., .setSize(n)
 
+        // find the longest string length in wordList.txt
+        int z = getLongestString(string_vector);
 
-        Collections.sort(a);
-        //testing
-        System.out.println("Before padding: ");
-        for(int i = 0; i < 10; i++) {
-            System.out.println(a.get(i));
-        }
+        counter += 4; // getLongestString(), int z = ..., z - 1, int index = ...
 
-        // perform left padding
-        leftPadding(a, '!', z);
+        // start sorting for from back to front LSD
+        for (int index = z - 1; index >= 0; index--) {
 
-        // !! once done adding padding, can put in the assert length code here to check the length again
-        // check that strings have fixed length
-        // !! need to put this after manipulating string
-        for (int i = 0; i < n; i++)
-            assert a.get(i).length() == z : "Strings must have fixed length of "+z;
-
-
-        for (int d = z - 1; d >= 0; d--) {
-            // sort by key-indexed counting on dth character
+            counter += 3; // index >= 0, index--
 
             // compute frequency counts
-            int[] count = new int[R + 1];
-            for (int i = 0; i < n; i++){
-                int index = a.get(i).charAt(d) + 1;
-                count[index]++;
+            int[] count_array = new int[count_size];
+
+            // need to initialise 0 first
+            Arrays.fill(count_array, 0);
+
+            counter += 3; // int[]count_array = ..., .fill(), int i = 0
+
+            // count number of each char based on each string index
+            for (int i = 0; i < n; i++) {
+
+                counter += 3; // i<n, i++
+
+                int char_index;
+
+                counter += 4; // .get(), .length(), -1, < index
+
+                //if word length is lesser than the current position index
+                if (string_vector.get(i).length() - 1 < index) {
+                    char_index = 0;
+
+                    counter++; // char_index = 0
+                } else {
+                    char_index = string_vector.get(i).charAt(index) - (int) smallest + 1;
+
+                    counter += 5; // char_index = ..., .get(), charAt(), - smallest, +1
+                }
+                count_array[char_index]++;
+
+                counter += 3; // count_array[char_index], ++
             }
 
-            // compute cumulates
-            for (int r = 0; r < R; r++)
-                count[r + 1] += count[r];
+            counter += 2; //final comparison before exiting the loop, int i = 0
 
-            // move data
-            for (int i = 0; i < n; i++)
-                aux.set(count[a.get(i).charAt(d)]++, a.get(i));
+            // compute cumulative
+            for (int i = 0; i < count_size-1; i++) {
+                counter += 4; // i < , count_size-1, i++
 
-            // copy back
-            for (int i = 0; i < n; i++)
-                a.set(i, aux.get(i));
+                count_array[i+1] += count_array[i];
+
+                counter += 5; // count_array[...], i+1, +=, count_array[i]
+            }
+
+            counter += 3; //final comparison before exiting the loop, int i = ..., n-1
+
+            // move data based on the count_array indexing
+            for (int i = n - 1; i >= 0; i--) {
+                counter += 3; // i >= 0, i--
+
+                int char_index;
+
+                counter += 4; // .get(), .length(), -1, < index
+
+                //if word length is lesser than the current position index
+                if (string_vector.get(i).length() - 1 < index) {
+                    char_index = 0;
+
+                    counter++; // char_index = 0
+                } else {
+                    char_index = string_vector.get(i).charAt(index) - (int) smallest + 1;
+
+                    counter += 5; // char_index = ..., .get(), charAt(), - smallest, +1
+                }
+
+                aux.set(count_array[char_index] - 1, string_vector.get(i));
+                count_array[char_index]--;
+
+                counter += 7; // .set(), count_array[char_index], -1, .get(), count_array[char_index], --
+            }
+
+            counter += 2; //final comparison before exiting the loop, int i = 0
+
+            // copy back the string vector
+            for (int i = 0; i < n; i++) {
+                counter += 3; // i < n, i++
+
+                string_vector.set(i, aux.get(i));
+
+                counter += 2; // .set(), .get()
+            }
+
+            counter++; //final comparison before exiting the loop
         }
 
-        // remove all the placeholder '0'
-        replaceAll(a,"!");
+        counter += 2; //final comparison before exiting the loop, return
 
-        return 0;
+        return counter;
+    }
+
+    // best case for radix sort is whole list with similar length, length 8 is picked as it has the highest distribution
+    static long best_radix_sort(Vector<String> string_vector, int input){
+        long best_case;
+
+        // filter the string_vector and store only words with length 8
+        Vector<String> filtered_vector = new Vector<>();
+        for(String word: string_vector){
+            if(word.length()==8){
+                filtered_vector.add(word);
+            }
+        }
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(filtered_vector.subList(0,input)));
+
+        // store best_case primitive operations
+        best_case = radix_sort(input_vector, '\'', '™');
+
+        System.out.println("Best Case: " + best_case);
+
+        return best_case;
+    }
+
+    // average case for radix sort is whole list with different lengths
+    static long average_radix_sort(Vector<String> string_vector, int input){
+        long average_case, sum = 0L;
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(string_vector.subList(0,input)));
+
+        // store primitive operation for each time
+        Vector<Long> primitive_operation_tracker = new Vector<>();
+
+        // run 10 times and find the average
+        for(int i=0; i<10; i++){
+            // shuffle the word list before sorting
+            Collections.shuffle(input_vector);
+
+            // track the time complexity for each sorting
+            primitive_operation_tracker.add(radix_sort(input_vector, '\'', '™'));
+        }
+
+        for(long time: primitive_operation_tracker){
+            sum += time;
+        }
+
+        // store average_case primitive operations
+        average_case = (long)Math.ceil((double)sum / primitive_operation_tracker.size());
+
+        System.out.println("Average Case: " + average_case);
+
+        return average_case;
+    }
+
+    // worst case for radix sort is all have same length except one element with significantly longer length
+    static long worst_radix_sort(Vector<String> string_vector, int input){
+        long worst_case;
+        String longest_word = null;
+
+        // filter the string_vector and store only words with length 8 + find the string with the longest length
+        Vector<String> filtered_vector = new Vector<>();
+        for(String word: string_vector){
+            if(word.length()==8){
+                filtered_vector.add(word);
+            }
+            if(word.length()==30){
+                longest_word = word;
+            }
+        }
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(filtered_vector.subList(0,input)));
+
+        // if more than one input
+        if(input!=1){
+            // remove one element first and insert the longest word inside the input_vector
+            input_vector.remove(0);
+            input_vector.add(longest_word);
+        }
+
+        // store worst_case primitive operations
+        worst_case = radix_sort(input_vector, '\'', '™');
+
+        System.out.println("Worst Case: " + worst_case);
+
+        return worst_case;
     }
 
     public static void main(String[] args) {
+
+        // declare variables
+        Vector<Vector<Long>> primitive_operation_tracker = new Vector<>();
+        primitive_operation_tracker.add(new Vector<>()); // to store best case
+        primitive_operation_tracker.add(new Vector<>()); // to store average case
+        primitive_operation_tracker.add(new Vector<>()); // to store worst case
+        Vector<Integer> inputs = new Vector<>(); // to store the inputs(n)
+
         // set file path
         String file_name = "src/wordList.txt";
 
@@ -123,51 +242,67 @@ public class radixSort {
         // import the words from .txt file
         try {
             importWords.import_words(file_name, string_vector);
-
-            int n = string_vector.size();
-
-        }
-        catch(IOException e){
+        } catch (IOException e) {
             System.out.println("Something went wrong when reading a file");
         }
 
-        System.out.println((int)'™');
-
-        // sort the strings
-        // !! change the function to get the length of string inside the radix_sort
-        // !! radix_sort can put outside the try catch as the try catch is for reading the file je
-        radix_sort(string_vector);
-
         // display total words read from .txt file
-        System.out.println("Total length after reading .txt file is :" + string_vector.size());
+        int original_size = string_vector.size();
+        System.out.println("Total length after reading .txt file is :" + original_size);
 
+        // Generate inputs(n)
+        inputs.add(1);
+        for(int i=1000; i<21500; i+=1000){
+            inputs.add(i+1);
+        }
+        inputs.add(21583); // largest number of string with length 8
+        //System.out.println(inputs);
+        //System.out.println();
+
+        // finding primitive operations for 3 cases for different inputs(n)
+        for(int n: inputs){
+
+            // output current inputs
+            System.out.println("Current input(n): "+n);
+
+            // Best Case scenario
+            primitive_operation_tracker.get(0).add(best_radix_sort(string_vector, n));
+
+            // Average Case scenario -
+            primitive_operation_tracker.get(1).add(average_radix_sort(string_vector, n));
+
+            // Worst Case scenario
+            primitive_operation_tracker.get(2).add(worst_radix_sort(string_vector, n));
+
+            System.out.println("-------------------------------");
+        }
+
+        // store all results into a csv file
+        recordOperationvsN.writeToCSV("radixSort", primitive_operation_tracker, inputs);
+
+
+        /*
+        // create a length distribution array and see
+        Collections.shuffle(string_vector);
+        int[] length_dist = new int[31];
+        Arrays.fill(length_dist,0);
+        for (String s : string_vector) {
+            length_dist[s.length()]++;
+        }
+        for(int i=0; i<length_dist.length; i++){
+            System.out.println("No of string with length " + i + ": " + length_dist[i]);
+        }
+         */
+
+        /*
+        // test radix sort
+        radix_sort(string_vector, '\'', '™');
         // check the first x words of the sorted vector
         System.out.println("After Sorting: ");
-        for(int i = 50; i < 70; i++) {
+        for (int i = 0; i < 20; i++) {
             System.out.println(string_vector.get(i));
         }
-        // run 10 times and find the best, average, worst case
-        // !! your 3 cases is slightly diff then us https://iq.opengenus.org/time-and-space-complexity-of-radix-sort/#:~:text=The%20worst%20case%20in%20radix%20sort%20occurs%20when,running%20time%20of%20Counting%20sort%20is%20O%20%28n%2Bb%29.
-        /*Vector<Long> time_complexity_tracker = new Vector<>();
-        for(int i=0; i<10; i++){
-            // shuffle the word list before sorting
-            Collections.shuffle(string_vector);
+         */
 
-            // track the time complexity for each sorting
-            time_complexity_tracker.add(radix_sort(string_vector,0));
-        }
-        long worst_case = Collections.max(time_complexity_tracker);
-        long best_case = Collections.min(time_complexity_tracker);
-        long average_case, sum = 0L;
-
-        for(long time: time_complexity_tracker){
-            sum += time;
-        }
-        average_case = (long)Math.ceil((double)sum / time_complexity_tracker.size()); // maybe need to do %10e9
-
-        System.out.println();
-        System.out.println("Worst Case: " + worst_case);
-        System.out.println("Average Case: " + average_case);
-        System.out.println("Best Case: " + best_case);
-    */}
+    }
 }

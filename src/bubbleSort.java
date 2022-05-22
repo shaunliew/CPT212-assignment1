@@ -4,15 +4,14 @@ import java.util.Vector;
 
 public class bubbleSort {
     // assume that calling vector method is 1 primitive operation
-    static int bubble_sort(Vector<String> string_vector){
+    static long bubble_sort(Vector<String> string_vector){
         boolean swapped;
-        int primitiveOperations = 0; // 1 assignment
+        long primitiveOperations = 0; // 1 assignment
         int n = string_vector.size(); // 1  assignment and 1 function call
         //assign times = 0 for the outer loop, 1 assignment
         primitiveOperations+= 4;
         for(int times=0;times<n-1;times++) // n-1 additions and n-1 assignments
         {
-            //System.out.println("Current loop: "+ times);
             primitiveOperations +=3;//compare times and times++
             //reset the tracker for every new loop
             swapped = false; // 1 assignment
@@ -25,7 +24,6 @@ public class bubbleSort {
             {
                 // compare j and j++
                 primitiveOperations+=3;
-                //System.out.println("now comparing "+ string_vector.get(j) + " and "+ string_vector.get(j + 1));
                 //3 method call and 1 comparison (for check the swapping value)
                 primitiveOperations+=4;
                 if(string_vector.get(j).compareTo(string_vector.get(j+1))>0) //
@@ -45,9 +43,6 @@ public class bubbleSort {
             primitiveOperations++;
             if(!swapped)
             {
-                //System.out.println("since the array is sorted, break the outer loop");
-                // 1 method call
-                primitiveOperations++;
                 // if break the loop, then it doesn't have final comparison for outer loop
                 primitiveOperations--;
                 break;
@@ -58,89 +53,124 @@ public class bubbleSort {
         return primitiveOperations;
     }
 
-    static void showResult(String caseName, Vector<String> string_vector)
-    {
-        System.out.println(caseName+":");
-//        System.out.println("The array before sorting");
-//        for(String i: string_vector)
-//        {
-//            System.out.println(i);
-//        }
-        int PrimitiveOperations = bubble_sort(string_vector);
-//        System.out.println("\nAfter the bubble sort, the sorted array is");
-//        for(String i: string_vector)
-//        {
-//            System.out.println(i);
-//        }
-        System.out.println("The number of primitive operations used for "+caseName+ " is " + PrimitiveOperations);
-        System.out.println();
+    static long best_bubble_sort(Vector<String> string_vector){
+        long best_case;
+
+        // best case for insertion sort is sorted list
+        Collections.sort(string_vector);
+
+        // store best_case primitive operations
+        best_case = bubble_sort(string_vector);
+
+        System.out.println("Best Case: " + best_case);
+
+        return best_case;
     }
 
-    static void showAverageCaseResult(Vector<String> string_vector, int numberOfShuffle)
-    {
-        // shuffle the word list before sorting
-        System.out.println("Average Case:");
-        int TotalPrimitiveOperations = 0;
-        for(int i = 0; i<numberOfShuffle;i++)
-        {
+    static long average_bubble_sort(Vector<String> string_vector){
+        long average_case, sum = 0L;
+
+        // store primitive operation for each time
+        Vector<Long> primitive_operation_tracker = new Vector<>();
+
+        // run 10 times and find the average
+        for(int i=0; i<10; i++){
+            // shuffle the word list before sorting
             Collections.shuffle(string_vector);
-            int temp = bubble_sort(string_vector);
-            //System.out.println("The number of primitive operations used are for loop "+ i + " are " + temp);
-            TotalPrimitiveOperations += temp;
+
+            // track the time complexity for each sorting
+            primitive_operation_tracker.add(bubble_sort(string_vector));
         }
-        int averagePrimitiveOperations = TotalPrimitiveOperations/numberOfShuffle;
-        System.out.println("The number of shuffle we used for average case is "+ numberOfShuffle);
-        System.out.println("The number of primitive operations used for average case is " + averagePrimitiveOperations);
-        System.out.println();
+
+        for(long time: primitive_operation_tracker){
+            sum += time;
+        }
+
+        // store average_case primitive operations
+        average_case = (long)Math.ceil((double)sum / primitive_operation_tracker.size());
+
+        System.out.println("Average Case: " + average_case);
+
+        return average_case;
     }
 
-    // worst case is O(n^2)
+    static long worst_bubble_sort(Vector<String> string_vector){
+        long worst_case;
+
+        // worst case for insertion sort is reverse list
+        Collections.sort(string_vector, Collections.reverseOrder());
+
+        // store worst_case primitive operations
+        worst_case = bubble_sort(string_vector);
+
+        System.out.println("Worst Case: " + worst_case);
+
+        return worst_case;
+    }
+    //Time complexity for bubble sort
     // best case is O(n)
     // average case is O(n^2)
+    // worst case is O(n^2)
+
     public static void main(String[] args){
         // Name of algorithm
         System.out.println("Bubble Sort:");
+        // declare variables
+        Vector<Vector<Long>> primitive_operation_tracker = new Vector<>();
+        primitive_operation_tracker.add(new Vector<>()); // to store best case
+        primitive_operation_tracker.add(new Vector<>()); // to store average case
+        primitive_operation_tracker.add(new Vector<>()); // to store worst case
+        Vector<Integer> inputs = new Vector<>(); // to store the inputs(n)
+
         // set file path
-        String averageCase_file_name = "src/averageCaseWordList.txt";
-        String bestCase_file_name = "src/bestCaseWordList.txt";
-        String worstCase_file_name = "src/worstCaseWordList.txt";
-        String test_file_name = "src/test.txt";
+        String file_name = "src/wordList.txt";
+
         // declare string vector to store input
-        Vector<String> averageCase_string_vector = new Vector<>();
-        Vector<String> bestCase_string_vector = new Vector<>();
-        Vector<String> worstCase_string_vector = new Vector<>();
-        Vector<String> test_string_vector = new Vector<>();
+        Vector<String> string_vector = new Vector<>();
+
         // import the words from .txt file
         try{
-            importWords.import_words(averageCase_file_name, averageCase_string_vector);
-            importWords.import_words(bestCase_file_name, bestCase_string_vector);
-            importWords.import_words(worstCase_file_name, worstCase_string_vector);
-            importWords.import_words(test_file_name, test_string_vector);
+            importWords.import_words(file_name, string_vector);
         }catch(IOException e){
-            System.out.println("Something went wrong when reading the files");
+            System.out.println("Something went wrong when reading a file");
         }
 
         // display total words read from .txt file
-        System.out.println("Total length after reading each .txt file are:" );
-        System.out.println("Average case file is "+ averageCase_string_vector.size());
-        System.out.println("Best case file is "+ bestCase_string_vector.size());
-        System.out.println("Worst case file is "+ worstCase_string_vector.size());
-        System.out.println("Test file is "+ test_string_vector.size());
-        System.out.println();
+        int original_size = string_vector.size();
+        System.out.println("Total length after reading .txt file is :" + original_size);
 
-        //For Testing
-        showResult("Test Case",test_string_vector);
-       for(String i: test_string_vector)
-       {
-           System.out.println(i);
-       }
+        // Generate inputs(n)
+        inputs.add(1);
+        for(int i=5000; i<142000; i+=5000){
+            inputs.add(i+1);
+        }
+        inputs.add(original_size);
 
-        //For Average case
-        showAverageCaseResult(averageCase_string_vector,100);
-        //for best case
-        showResult("Best Case",bestCase_string_vector);
-        //for worst case
-        showResult("Worst Case",worstCase_string_vector);
+        // finding primitive operations for 3 cases for different inputs(n)
+        for(int n: inputs){
+
+            // slice the vector
+            Vector<String> input_vector = new Vector<>();
+            input_vector.addAll(new Vector<>(string_vector.subList(0,n)));
+
+            // output current inputs
+            System.out.println("Current input(n): "+n);
+
+            // Best Case scenario
+            primitive_operation_tracker.get(0).add(best_bubble_sort(input_vector));
+
+            // Average Case scenario -
+            primitive_operation_tracker.get(1).add(average_bubble_sort(input_vector));
+
+            // Worst Case scenario
+            primitive_operation_tracker.get(2).add(worst_bubble_sort(input_vector));
+
+            System.out.println("-------------------------------");
+        }
+
+        // store all results into a csv file
+        recordOperationvsN.writeToCSV("bubbleSort", primitive_operation_tracker, inputs);
+
     }
 
 }
