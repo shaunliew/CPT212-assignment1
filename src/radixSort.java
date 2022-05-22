@@ -133,22 +133,37 @@ public class radixSort {
         return counter;
     }
 
-    static long best_radix_sort(Vector<String> string_vector){
+    // best case for radix sort is whole list with similar length, length 8 is picked as it has the highest distribution
+    static long best_radix_sort(Vector<String> string_vector, int input){
         long best_case;
 
-        // best case for radix sort is sorted list
-        Collections.sort(string_vector);
+        // filter the string_vector and store only words with length 8
+        Vector<String> filtered_vector = new Vector<>();
+        for(String word: string_vector){
+            if(word.length()==8){
+                filtered_vector.add(word);
+            }
+        }
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(filtered_vector.subList(0,input)));
 
         // store best_case primitive operations
-        best_case = radix_sort(string_vector, '\'', '™');
+        best_case = radix_sort(input_vector, '\'', '™');
 
         System.out.println("Best Case: " + best_case);
 
         return best_case;
     }
 
-    static long average_radix_sort(Vector<String> string_vector){
+    // average case for radix sort is whole list with different lengths
+    static long average_radix_sort(Vector<String> string_vector, int input){
         long average_case, sum = 0L;
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(string_vector.subList(0,input)));
 
         // store primitive operation for each time
         Vector<Long> primitive_operation_tracker = new Vector<>();
@@ -156,10 +171,10 @@ public class radixSort {
         // run 10 times and find the average
         for(int i=0; i<10; i++){
             // shuffle the word list before sorting
-            Collections.shuffle(string_vector);
+            Collections.shuffle(input_vector);
 
             // track the time complexity for each sorting
-            primitive_operation_tracker.add(radix_sort(string_vector, '\'', '™'));
+            primitive_operation_tracker.add(radix_sort(input_vector, '\'', '™'));
         }
 
         for(long time: primitive_operation_tracker){
@@ -174,14 +189,35 @@ public class radixSort {
         return average_case;
     }
 
-    static long worst_radix_sort(Vector<String> string_vector){
+    // worst case for radix sort is all have same length except one element with significantly longer length
+    static long worst_radix_sort(Vector<String> string_vector, int input){
         long worst_case;
+        String longest_word = null;
 
-        // worst case for insertion sort is reverse list
-        Collections.sort(string_vector, Collections.reverseOrder());
+        // filter the string_vector and store only words with length 8 + find the string with the longest length
+        Vector<String> filtered_vector = new Vector<>();
+        for(String word: string_vector){
+            if(word.length()==8){
+                filtered_vector.add(word);
+            }
+            if(word.length()==30){
+                longest_word = word;
+            }
+        }
+
+        // slice the vector based on the required input(n)
+        Vector<String> input_vector = new Vector<>();
+        input_vector.addAll(new Vector<>(filtered_vector.subList(0,input)));
+
+        // if more than one input
+        if(input!=1){
+            // remove one element first and insert the longest word inside the input_vector
+            input_vector.remove(0);
+            input_vector.add(longest_word);
+        }
 
         // store worst_case primitive operations
-        worst_case = radix_sort(string_vector, '\'', '™');
+        worst_case = radix_sort(input_vector, '\'', '™');
 
         System.out.println("Worst Case: " + worst_case);
 
@@ -216,37 +252,47 @@ public class radixSort {
 
         // Generate inputs(n)
         inputs.add(1);
-        for(int i=5000; i<142000; i+=5000){
+        for(int i=1000; i<21500; i+=1000){
             inputs.add(i+1);
         }
-        inputs.add(original_size);
+        inputs.add(21583); // largest number of string with length 8
         //System.out.println(inputs);
         //System.out.println();
 
         // finding primitive operations for 3 cases for different inputs(n)
         for(int n: inputs){
 
-            // slice the vector
-            Vector<String> input_vector = new Vector<>();
-            input_vector.addAll(new Vector<>(string_vector.subList(0,n)));
-
             // output current inputs
             System.out.println("Current input(n): "+n);
 
             // Best Case scenario
-            primitive_operation_tracker.get(0).add(best_radix_sort(input_vector));
+            primitive_operation_tracker.get(0).add(best_radix_sort(string_vector, n));
 
             // Average Case scenario -
-            primitive_operation_tracker.get(1).add(average_radix_sort(input_vector));
+            primitive_operation_tracker.get(1).add(average_radix_sort(string_vector, n));
 
             // Worst Case scenario
-            primitive_operation_tracker.get(2).add(worst_radix_sort(input_vector));
+            primitive_operation_tracker.get(2).add(worst_radix_sort(string_vector, n));
 
             System.out.println("-------------------------------");
         }
 
         // store all results into a csv file
         recordOperationvsN.writeToCSV("radixSort", primitive_operation_tracker, inputs);
+
+
+        /*
+        // create a length distribution array and see
+        Collections.shuffle(string_vector);
+        int[] length_dist = new int[31];
+        Arrays.fill(length_dist,0);
+        for (String s : string_vector) {
+            length_dist[s.length()]++;
+        }
+        for(int i=0; i<length_dist.length; i++){
+            System.out.println("No of string with length " + i + ": " + length_dist[i]);
+        }
+         */
 
         /*
         // test radix sort
