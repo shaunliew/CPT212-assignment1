@@ -19,9 +19,6 @@ public class insertionSort {
 
             counter += 3; // i < ... and i++
 
-            // print out the progress of the insertion sort algorithm
-            //System.out.println("Currently at index "+i);
-
             // store the current word into a String variable
             String temp = string_vector.get(i);
             counter += 2; // .get method and assigning value
@@ -177,15 +174,5 @@ public class insertionSort {
 
         // store all results into a csv file
         recordOperationvsN.writeToCSV("insertionSort", primitive_operation_tracker, inputs);
-
-        /*
-        //test insertion sort
-        insertion_sort(string_vector);
-        //check the first x words of the sorted vector
-        System.out.println("AfterSorting:");
-        for(int i=0;i<20;i++){
-            System.out.println(string_vector.get(i));
-        }
-         */
     }
 }

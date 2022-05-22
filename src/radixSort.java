@@ -22,11 +22,6 @@ public class radixSort {
     // starting radix sort
     static long radix_sort(Vector<String> string_vector, char smallest, char largest) {
 
-        /*
-        System.out.println((int)'\''); //smallest ascii -39
-        System.out.println((int)'™'); //largest ascii - 8483
-         */
-
         int n = string_vector.size();
         int count_size = (int) largest - smallest + 2;
         Vector<String> aux = new Vector<>();
@@ -279,30 +274,5 @@ public class radixSort {
 
         // store all results into a csv file
         recordOperationvsN.writeToCSV("radixSort", primitive_operation_tracker, inputs);
-
-
-        /*
-        // create a length distribution array and see
-        Collections.shuffle(string_vector);
-        int[] length_dist = new int[31];
-        Arrays.fill(length_dist,0);
-        for (String s : string_vector) {
-            length_dist[s.length()]++;
-        }
-        for(int i=0; i<length_dist.length; i++){
-            System.out.println("No of string with length " + i + ": " + length_dist[i]);
-        }
-         */
-
-        /*
-        // test radix sort
-        radix_sort(string_vector, '\'', '™');
-        // check the first x words of the sorted vector
-        System.out.println("After Sorting: ");
-        for (int i = 0; i < 20; i++) {
-            System.out.println(string_vector.get(i));
-        }
-         */
-
     }
 }
