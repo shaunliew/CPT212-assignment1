@@ -1,21 +1,14 @@
-// a) sorting words instead of numbers
-// b) words of different length
-// based on lecturer start from back to front
-
-
-import org.apache.groovy.parser.antlr4.util.StringUtils;
-import org.codehaus.groovy.util.StringUtil;
-
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Vector;
 
 public class radixSort {
 
-    private void radixSort() {
+    private radixSort() {
     }
 
-    // find the longest string in wordList.txt
+    // find the longest string length in wordList.txt
     static int getLongestString(Vector<String> string_vector) {
         int maxLength = 0;
         for (String s : string_vector) {
@@ -26,15 +19,14 @@ public class radixSort {
         return maxLength;
     }
 
-    // perform left padding by inserting "!" to the left of strings which length < maxLength
-    // !! need to change this function to update the whole vector or single line je? can think whether to include counter in this part later
+    // perform left padding by inserting a char 'ch' to the left of strings which length < maxLength
     static void leftPadding(Vector<String> string_vector, char ch, int L) {
         // Loop over vector
         for (int i = 0; i < string_vector.size(); i++) {
             String result = String
-                            // First left pad the string with space up to length L
+                            // left pad the string with space up to length L
                             .format("%" + L + "s", string_vector.get(i))
-                            // Then replace all the spaces with the given character ch
+                            // replace all the spaces with the given character ch
                             .replace(' ', ch);
             // update the string in the vector
             string_vector.set(i,result);
@@ -42,7 +34,6 @@ public class radixSort {
     }
 
     // remove "!" that has been inserted before
-    // !! similar can think of manipulate the whole string, becareful whether to add counter inside or not, as it's involved in the radix_sort function already
     static void replaceAll(Vector<String> string_vector, String ch){
         for (int i = 0; i < string_vector.size(); i++) {
             // replace all '!' with ''
@@ -53,64 +44,62 @@ public class radixSort {
     }
 
     // starting radix sort
-    // !! need to remove z as parameter as the length will be determined inside
     static long radix_sort(Vector<String> string_vector) {
+
+        long counter = 0L;
 
         int n = string_vector.size();
         int R = 8483;   // largest char available in text file
         Vector<String> aux = new Vector<>();
         aux.setSize(n);
-        Vector<String> a = string_vector;
 
-        // find the longest string in wordList.txt
-        // !! can store the maxLength into a variable named z(put inside the function instead of parameter)
-        int z = getLongestString(a);
-
-
-        Collections.sort(a);
-        //testing
-        System.out.println("Before padding: ");
-        for(int i = 0; i < 10; i++) {
-            System.out.println(a.get(i));
-        }
+        // find the longest string length in wordList.txt
+        // System.out.println((int)'™');
+        int z = getLongestString(string_vector);
 
         // perform left padding
-        leftPadding(a, '!', z);
+        leftPadding(string_vector, '!', z);
 
-        // !! once done adding padding, can put in the assert length code here to check the length again
         // check that strings have fixed length
-        // !! need to put this after manipulating string
         for (int i = 0; i < n; i++)
-            assert a.get(i).length() == z : "Strings must have fixed length of "+z;
+            assert string_vector.get(i).length() == z : "Strings must have fixed length of "+z;
 
+        // start sorting for from back to front LSD
+        for (int index = z - 1; index >= 0; index--) {
 
-        for (int d = z - 1; d >= 0; d--) {
-            // sort by key-indexed counting on dth character
+            // compute frequency counts, can directly map char index
+            int[] count_array = new int[R + 1];
 
-            // compute frequency counts
-            int[] count = new int[R + 1];
+            // need to initialise 0 first
+            Arrays.fill(count_array, 0);
+
+            // can switch to no need padding, just if the length is smaller, count_array++ at index 0
             for (int i = 0; i < n; i++){
-                int index = a.get(i).charAt(d) + 1;
-                count[index]++;
+                int char_index = string_vector.get(i).charAt(index) + 1;
+                count_array[char_index]++;
             }
 
             // compute cumulates
-            for (int r = 0; r < R; r++)
-                count[r + 1] += count[r];
+            for (int i = 0; i < R; i++){
+                count_array[i + 1] += count_array[i];
+            }
 
+            // !! here differ
             // move data
-            for (int i = 0; i < n; i++)
-                aux.set(count[a.get(i).charAt(d)]++, a.get(i));
+            for (int i = 0; i < n; i++){
+                aux.set(count_array[string_vector.get(i).charAt(index)]++, string_vector.get(i));
+            }
 
             // copy back
-            for (int i = 0; i < n; i++)
-                a.set(i, aux.get(i));
+            for (int i = 0; i < n; i++){
+                string_vector.set(i, aux.get(i));
+            }
         }
 
-        // remove all the placeholder '0'
-        replaceAll(a,"!");
+        // remove all the placeholder '!'
+        replaceAll(string_vector,"!");
 
-        return 0;
+        return counter;
     }
 
     public static void main(String[] args) {
@@ -131,7 +120,7 @@ public class radixSort {
             System.out.println("Something went wrong when reading a file");
         }
 
-        System.out.println((int)'™');
+
 
         // sort the strings
         // !! change the function to get the length of string inside the radix_sort

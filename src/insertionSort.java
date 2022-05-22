@@ -10,7 +10,7 @@ public class insertionSort {
     private insertionSort() {
     }
 
-    static long insertion_sort(Vector<String> string_vector, int iteration) {
+    static long insertion_sort(Vector<String> string_vector) {
 
         long counter = 2L; // int j = 1, j;
 
@@ -20,11 +20,11 @@ public class insertionSort {
             counter += 3; // i < ... and i++
 
             // print out the progress of the insertion sort algorithm
-            //System.out.println("Iteration " + iteration +  ": Currently at index "+i);
+            //System.out.println("Currently at index "+i);
 
             // store the current word into a String variable
             String temp = string_vector.get(i);
-            counter += 2; // .get method and assigning value and (excluded println now)
+            counter += 2; // .get method and assigning value
 
             counter++; // j=i
 
@@ -68,7 +68,7 @@ public class insertionSort {
         Collections.sort(string_vector);
 
         // store best_case primitive operations
-        best_case = insertion_sort(string_vector, 1);
+        best_case = insertion_sort(string_vector);
 
         System.out.println("Best Case: " + best_case);
 
@@ -87,7 +87,7 @@ public class insertionSort {
             Collections.shuffle(string_vector);
 
             // track the time complexity for each sorting
-            primitive_operation_tracker.add(insertion_sort(string_vector, i+1));
+            primitive_operation_tracker.add(insertion_sort(string_vector));
         }
 
         for(long time: primitive_operation_tracker){
@@ -109,7 +109,7 @@ public class insertionSort {
         Collections.sort(string_vector, Collections.reverseOrder());
 
         // store worst_case primitive operations
-        worst_case = insertion_sort(string_vector, 1);
+        worst_case = insertion_sort(string_vector);
 
         System.out.println("Worst Case: " + worst_case);
 
@@ -179,20 +179,13 @@ public class insertionSort {
         recordOperationvsN.writeToCSV("insertionSort", primitive_operation_tracker, inputs);
 
         /*
-        // test insertion sort
+        //test insertion sort
         insertion_sort(string_vector);
-        // check the first x words of the sorted vector
-        System.out.println("After Sorting: ");
-        for(int i = 0; i < 20; i++) {
-            System.out.println(string_vector.get(i));
+        //check the first x words of the sorted vector
+        System.out.println("AfterSorting:");
+        for(inti=0;i<20;i++){
+        System.out.println(string_vector.get(i));
         }
-
-        // double-check the sort algorithm
-        Collections.sort(string_vector);
-        System.out.println("After Java Sorting: ");
-        for(int i = 0; i < 20; ++i) {
-            System.out.println(string_vector.get(i));
-        }
-        */
+         */
     }
 }
