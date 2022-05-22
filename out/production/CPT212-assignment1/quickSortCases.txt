@@ -1,0 +1,3 @@
+Best Case: 349601721
+Average Case: 483134206
+Worst Case: 616219545
