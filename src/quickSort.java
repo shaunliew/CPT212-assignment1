@@ -159,19 +159,6 @@ public class quickSort
 
         return worst_case;
     }
-         
-    /*
-    Method for printing string_vector after sorting
-
-    static void printResult(Vector<String> string_vector)
-    {
-        int n = string_vector.size();
-        for (int i = 0; i < n; ++i)
-        {
-            System.out.println(string_vector.get(i));
-        }
-    }
-    */
 
     //Main program
     public static void main(String[] args)
@@ -233,36 +220,6 @@ public class quickSort
 
         // store all results into a csv file
         recordOperationvsN.writeToCSV("quickSort", primitive_operation_tracker, inputs);
-        
-        /*
-        //Store 3 cases primitive operations in .txt file to avoid rerun of the code
-        try{
-            //Declare data to be stored
-            String data = "Best Case: " + best_case + "\nAverage Case: " + average_case + "\nWorst Case: " + worst_case;
-
-            //Creates a FileWriter
-            FileWriter file = new FileWriter("src/quickSortCases.txt");
-
-            //Creates a BufferedWriter
-            BufferedWriter buffer = new BufferedWriter(file);
-
-            //Writes the string to the file
-            buffer.write(data);
-
-            //Close the writer
-            buffer.close();
-        }catch (Exception e){
-            System.out.println("Something went wrong when writing a file");
-        }
-        */
-
-        /*
-        Testing for the quickSort function and display the sorted string
-        int n = string_vector.size();
-        qckSort(string_vector, 0, n-1);
-        System.out.println("Sorted String:");
-        printResult(string_vector);
-         */
     }
 }
 
