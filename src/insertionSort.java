@@ -183,8 +183,8 @@ public class insertionSort {
         insertion_sort(string_vector);
         //check the first x words of the sorted vector
         System.out.println("AfterSorting:");
-        for(inti=0;i<20;i++){
-        System.out.println(string_vector.get(i));
+        for(int i=0;i<20;i++){
+            System.out.println(string_vector.get(i));
         }
          */
     }
